@@ -17,6 +17,7 @@ router.post("/request/send/:status/:toUserId", userAuth, async (req, res) => {
     if(!toUser){
         return res.status(404).json({message:"Id not found"})
     }
+    //check whether connection request already exists
     const isRequestExists = await connectionRequest.findOne({
       $or: [
         { fromUserId, toUserId },
@@ -43,4 +44,32 @@ router.post("/request/send/:status/:toUserId", userAuth, async (req, res) => {
   }
 });
 
+
+router.post("/request/review/:status/:requestId",userAuth,async(req,res)=>{
+  const loggedUserId = req.user.id
+  const {status,requestId} = req.params;
+  const allowedStatus = ["accepted","rejected"];
+  
+  try {
+    if(!allowedStatus.includes(status)){
+    return res.status(400).json({message:`Invalid status :${status}`})
+  }
+  
+  const connection = await connectionRequest.findOne({
+    _id:requestId,
+    toUserId:loggedUserId,
+    status : "interested"
+  });
+  
+  if(!connection){
+    return res.status(404).json({message:"Request not found"})
+  }else{
+    connection.status = status;
+    const data = await connection.save();
+    return res.json({message:`Request ${status} successfully`,data})
+  }
+  } catch (error) {
+    res.status(400).send(`Error:${error.message}`);
+  }
+})
 module.exports = router;
