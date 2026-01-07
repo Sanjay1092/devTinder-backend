@@ -67,12 +67,13 @@ const userSchema = new mongoose.Schema({
     validate(value) {
       return validator.isURL(value);
     },
+    default:"https://static.vecteezy.com/system/resources/previews/036/594/092/non_2x/man-empty-avatar-photo-placeholder-for-social-networks-resumes-forums-and-dating-sites-male-and-female-no-photo-images-for-unfilled-user-profile-free-vector.jpg"
   },
 });
 
 userSchema.methods.getJWT = function () {
   const token = jwt.sign({ _id: this._id }, "dev@Tinder1010", {
-    expiresIn: "5m",
+    expiresIn: "15m",
   });
   return token;
 };

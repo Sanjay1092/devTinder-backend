@@ -9,14 +9,8 @@ const router = express.Router();
 router.post("/signup", async (req, res) => {
   const {
     firstName,
-    lastName,
     emailId,
     password,
-    age,
-    gender,
-    skills,
-    bio,
-    photoUrl,
   } = req.body;
   try {
     // validate input data
@@ -26,17 +20,13 @@ router.post("/signup", async (req, res) => {
     // create a new instance of user model
     const user = new User({
       firstName,
-      lastName,
       emailId,
       password: encryptPassword,
-      age,
-      gender,
-      skills,
-      bio,
-      photoUrl,
     });
     await user.save();
-    res.send("user data saved successfully");
+    const token = user.getJWT();
+    res.cookie("token", token, { expires: new Date(Date.now() + 15*60*1000) });
+    res.status(201).send("user data saved successfully");
   } catch (error) {
     res.status(400).send(error.message);
   }

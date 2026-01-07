@@ -7,6 +7,7 @@ const ALLOWED_UPDATES = [
   "lastName",
   "age",
   "bio",
+  "photoUrl"
 ];
 
 module.exports = {

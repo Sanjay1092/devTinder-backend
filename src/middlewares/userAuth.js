@@ -6,7 +6,7 @@ const userAuth = async(req, res, next) => {
     // read cookies from req
     const { token } = req.cookies;
     if(!token){
-      throw new Error("Invalid token");
+      return res.status(401).send("Unauthorized: No token provided");
     }
     //validate the cookies
     const decodedObj = jwt.verify(token, "dev@Tinder1010");
@@ -14,12 +14,14 @@ const userAuth = async(req, res, next) => {
     const { _id } = decodedObj;
     const user = await User.findById(_id);
     if (!user) {
-      throw new Error("Invalid user");
+      return res.status(401).send("Unauthorized: Invalid token");
     }
     req.user =user;
     next();
   } catch (error) {
-    res.send(`Error:${error.message}`);
+    return res.status(401).json({
+      message: "Invalid or expired token",
+    });
   }
 };
 module.exports = { userAuth };

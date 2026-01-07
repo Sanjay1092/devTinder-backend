@@ -18,8 +18,9 @@ router.post("/login", async (req, res) => {
 
     if (isValidPassword) {
       const token = user.getJWT();
-      res.cookie("token", token, { expires: new Date(Date.now() + 300000) });
-      res.send("Login successful 🥳🥳");
+      const selectedUserData = await User.findById(user._id).select("firstName lastName age gender bio photoUrl")
+      res.cookie("token", token, { expires: new Date(Date.now() + 15*60*1000) });
+      res.send(selectedUserData);
     } else {
       throw new Error("Invalid credentials");
     }

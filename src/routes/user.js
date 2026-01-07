@@ -9,7 +9,7 @@ router.get("/request/received", userAuth, async (req, res) => {
     const loggedInUser = req.user;
     const requests = await connectionRequest
       .find({ toUserId: loggedInUser._id, status: "interested" })
-      .populate("fromUserId", "firstName lastName");
+      .populate("fromUserId", "firstName lastName age gender bio photoUrl");
     res.status(200).json({
       message: "Requests fetched successfully",
       requests,
@@ -29,8 +29,8 @@ router.get("/user/connections", userAuth, async (req, res) => {
           { toUserId: loggedInUser._id, status: "accepted" },
         ],
       })
-      .populate("fromUserId", "firstName lastName")
-      .populate("toUserId", "firstName lastName");
+      .populate("fromUserId", "firstName lastName age gender bio photoUrl")
+      .populate("toUserId", "firstName lastName age gender bio photoUrl");
 
     const data = connections.map((row) => {
       if (row.fromUserId._id.toString() === loggedInUser._id.toString()) {
@@ -74,7 +74,7 @@ router.get("/feed", userAuth, async (req, res) => {
     });
     const users = await User.find({
         $and:[{ _id: { $ne: loggedInUser._id } },{ _id: { $nin: Array.from(hideUsersFromFeed) } }]
-    }).select("firstName lastName").skip(skip).limit(limit);
+    }).select("firstName lastName age gender bio photoUrl ").skip(skip).limit(limit);
     // skip(0).limit(10)
     // skip(10).limit(10)
     res.status(200).json({ users});
